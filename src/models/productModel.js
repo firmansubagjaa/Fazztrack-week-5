@@ -5,9 +5,9 @@ const productController = {
   query: (queryParams, sortType = "asc", limit = 5, offset = 2) => {
     const { search, cat } = queryParams;
     if (search && cat) {
-      return `WHERE title ILIKE '%${search}%' AND category LIKE '%${cat}%' ORDER BY title ${sortType} LIMIT ${limit}`;
+      return `WHERE title ILIKE '%${search}%' AND category ILIKE '%${cat}%' ORDER BY title ${sortType} LIMIT ${limit}`;
     } else if (search || cat) {
-      return `WHERE title ILIKE '%${search}%' OR category LIKE '%${cat}%' ORDER BY title ${sortType} LIMIT ${limit} OFFSET ${offset}`;
+      return `WHERE title ILIKE '%${search}%' OR category ILIKE '%${cat}%' ORDER BY title ${sortType} LIMIT ${limit} OFFSET ${offset}`;
     } else {
       return `ORDER BY title ${sortType} LIMIT ${limit} OFFSET ${offset}`;
     }
@@ -48,7 +48,7 @@ const productController = {
   //POST
   add: ({ title, img, price, category }) => {
     return new Promise((resolve, reject) => {
-      db.query(`INSERT INTO products (id, title, img, price, category) VALUES ('${uuidv4()}', '${title}', '${img}', '${price}', '${category}')`, (err, result) => {
+      db.query(`INSERT INTO products (id, title, img, price, category) VALUES ('${uuidv4()}', '${title}', '${img}', '${price}', '${category}')`, (err) => {
         if (err) {
           return reject(err.message);
         } else {
@@ -59,7 +59,7 @@ const productController = {
   },
 
   //PATCH
-  update: ({ id, title, img, price, category }) => {
+  update: ({ id, title, img, price, category }, res) => {
     return new Promise((resolve, reject) => {
       db.query(`SELECT * FROM products WHERE id = '${id}'`, (err, result) => {
         if (err) {
@@ -67,7 +67,7 @@ const productController = {
         } else {
           db.query(
             `UPDATE products SET title = '${title || result.rows[0].title}', img = '${img || result.rows[0].img}', price = '${price || result.rows[0].price}', category = '${category || result.rows[0].category}' WHERE id = '${id}'`,
-            (err, result) => {
+            (err) => {
               if (err) {
                 return reject(res.status(500).send(err.message));
               } else {
@@ -84,7 +84,7 @@ const productController = {
   // DELETE
   remove: ({ id }) => {
     return new Promise((resolve, reject) => {
-      db.query(`DELETE from products WHERE id = '${id}'`, (err, result) => {
+      db.query(`DELETE from products WHERE id = '${id}'`, (err) => {
         if (err) {
           return reject({ message: err.message });
         } else {
